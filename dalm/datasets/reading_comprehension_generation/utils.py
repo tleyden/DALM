@@ -175,8 +175,16 @@ def extract_question_or_answer(text: str, extract_type: str = "question") -> Tup
     # Match a line that starts with any number of junk characters, followed by either "question:" 
     # or "answer:", followed by any number of spaces (ignored), followed by any number of characters
     # that will be captured in a group as the question or answer
-    extraction_regex = rf".*{extract_type}:\s*(.*)"
-    
+    # extraction_regex = rf".*{extract_type}:\s*(.*)"
+
+    # Update above to handle the case where the question or answer is in brackets, with
+    # other text to be ignored inside the brackets
+    # extraction_regex = rf".*\[?{extract_type}[:\]]*(?:.*?\])?\s*(.*)"
+    if extract_type == "question":
+        extraction_regex = r".*\[?QUESTION[:\]]*(?:.*?\])?\s*(.*)"
+    else:
+        extraction_regex = r".*\[?ANSWER[:\]]*(?:.*?\])?\s*(.*)"
+
     match = re.match(extraction_regex, text, re.IGNORECASE)
     extracted_text = match.group(1) if match else None
     found_extracted = True if extracted_text else False
@@ -233,6 +241,8 @@ def _raw_question_and_answer_extractor_new(whole_text: str) -> List[Dict[str, st
 
 def _raw_question_and_answer_extractor(whole_text: str) -> List[Dict[str, str]] | None:
     
+    """ Old - do not edit """
+
     text_lines = whole_text.split("\n")
     question: List[str] = []
     answer: List[str] = []
@@ -290,6 +300,8 @@ def _raw_question_and_answer_extractor(whole_text: str) -> List[Dict[str, str]] 
 # TODO: add test
 # TODO: refactor this as a state machine?
 def question_and_answer_extractor(whole_text: str, context: str) -> List[Dict[str, str]] | None:
+
+    raise NotImplementedError("This function is not implemented yet")
 
     result = _raw_question_and_answer_extractor(whole_text)
 

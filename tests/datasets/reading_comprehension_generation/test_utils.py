@@ -81,20 +81,20 @@ def test_question_and_answer_extractor():
                                 [ANSWER:] To make a deep architecture.""",
             "expected_output": [
                 {
-                    "question": "",
-                    "answer": ""
+                    "question": "What are thoracic diseases?",
+                    "answer": "Thoracic diseases refer to health problems."
                 },
                 {
-                    "question": "",
-                    "answer": ""
+                    "question": "How is chest X-ray currently?",
+                    "answer": "Chest X-ray is currently one."
                 },
                 {
-                    "question": "",
-                    "answer": ""
+                    "question": "Why is reading chest X-ray images?",
+                    "answer": "Reading chest X-ray images ."
                 },
                 {
-                    "question": "",
-                    "answer": ""
+                    "question": "What is the proposed solution?",
+                    "answer": "To make a deep architecture."
                 }
             ]
         },
@@ -106,20 +106,12 @@ def test_question_and_answer_extractor():
                                 ANSWER: Chest X-ray is currently one.""",
             "expected_output": [
                 {
-                    "question": "",
-                    "answer": ""
+                    "question": "What are thoracic diseases?",
+                    "answer": "Thoracic diseases refer to health problems."
                 },
                 {
-                    "question": "",
-                    "answer": ""
-                },
-                {
-                    "question": "",
-                    "answer": ""
-                },
-                {
-                    "question": "",
-                    "answer": ""
+                    "question": "How is chest X-ray currently?",
+                    "answer": "Chest X-ray is currently one."
                 }
             ]
         },
@@ -132,20 +124,12 @@ def test_question_and_answer_extractor():
                                 """,
             "expected_output": [
                 {
-                    "question": "",
-                    "answer": ""
+                    "question": "(type: normal q&a): What are thoracic diseases?",
+                    "answer": "Thoracic diseases refer to health problems."
                 },
                 {
-                    "question": "",
-                    "answer": ""
-                },
-                {
-                    "question": "",
-                    "answer": ""
-                },
-                {
-                    "question": "",
-                    "answer": ""
+                    "question": "(type: complete-the-sentence): How is chest X-ray currently?",
+                    "answer": "Chest X-ray is currently one."
                 }
             ]
         },
@@ -156,7 +140,7 @@ def test_question_and_answer_extractor():
     # pdb.set_trace()
 
     for input in inputs:
-        pdb.set_trace()
+        # pdb.set_trace()
         result_qa_pairs = _raw_question_and_answer_extractor_new(whole_text=input["whole_text"])
         expected_qa_pairs = input["expected_output"]
         for result, expected in zip(result_qa_pairs, expected_qa_pairs):
