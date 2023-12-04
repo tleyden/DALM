@@ -152,24 +152,50 @@ def fix_first_prompt(text: str, chat_chain: List[Dict[str, str]]) -> List[Dict[s
     ]
     return fixed_first_prompt + chat_chain
 
+
+def extract_question(text: str) -> Tuple[bool, str]:
+    """
+    Extracts a question from a line of text.
+    Returns a tuple of (is_question, question_text)
+    """
+    # question regex
+    return extract_question_or_answer(text, extract_type="question")
+
+def extract_answer(text: str) -> Tuple[bool, str]:
+    """
+    Extracts an answer from a line of text.
+    Returns a tuple of (is_answer, answer_text)
+    """
+    # question regex
+    return extract_question_or_answer(text, extract_type="answer")
+
+def extract_question_or_answer(text: str, extract_type: str = "question") -> Tuple[bool, str]:
+    extraction_regex = rf"{extract_type}:\s*(.*)"
+    match = re.match(extraction_regex, text, re.IGNORECASE)
+    extracted_text = match.group(1) if match else None
+    found_extracted = True if extracted_text else False
+    return found_extracted, extracted_text
+    
+
 def _raw_question_and_answer_extractor_new(whole_text: str) -> List[Dict[str, str]] | None:
     """
     Loop over all lines in the text.  
     When we find a question, capture the question into a variable and set a state flag
     When we find an answer, capture the answer into a variable and save the QA pair
     When we run out of lines, return the list of QA pairs
-    
     """
 
-
     # question regex
-    question_regex = r"^question\s*\d*"
+    # question_regex = r"^question:\s*\d*"
+    regex = r"QUESTION:\s*(.*)"
 
     # answer regex
-    answer_regex = r"^answer\s*\d*"
+    answer_regex = r"^answer:\s*\d*"
 
+    cur_qa_pair = {}
     qa_pairs = []
 
+    state = "waiting_for_question"  # waiting_for_question, waiting_for_answer
 
     text_lines = whole_text.split("\n")
     for i in text_lines:
@@ -180,9 +206,23 @@ def _raw_question_and_answer_extractor_new(whole_text: str) -> List[Dict[str, st
         if text == "":
             continue
 
+        if state == "waiting_for_question":
+            is_question, question_text = extract_question(text)
+            if is_question:
+                state = "waiting_for_answer"
+                cur_qa_pair = {"question": question_text, "answer": "TBD"}
+                continue
+        elif state == "waiting_for_answer":
+            is_answer, answer_text = extract_answer(text)
+            state = "waiting_for_question"
+            cur_qa_pair["answer"] = answer_text
+            qa_pairs.append(cur_qa_pair)
+            continue
 
+        else:
+            raise ValueError("Unknown state")   
 
-    pass 
+    return qa_pairs 
 
 
 def _raw_question_and_answer_extractor(whole_text: str) -> List[Dict[str, str]] | None:
