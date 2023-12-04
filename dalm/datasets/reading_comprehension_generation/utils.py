@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List, Optional, Tuple
 
 import sentencepiece as spm  # type: ignore[import-untyped]
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
+import pdb
 
 logger = logging.getLogger(__name__)
 
@@ -170,7 +171,12 @@ def extract_answer(text: str) -> Tuple[bool, str]:
     return extract_question_or_answer(text, extract_type="answer")
 
 def extract_question_or_answer(text: str, extract_type: str = "question") -> Tuple[bool, str]:
-    extraction_regex = rf"{extract_type}:\s*(.*)"
+
+    # Match a line that starts with any number of junk characters, followed by either "question:" 
+    # or "answer:", followed by any number of spaces (ignored), followed by any number of characters
+    # that will be captured in a group as the question or answer
+    extraction_regex = rf".*{extract_type}:\s*(.*)"
+    
     match = re.match(extraction_regex, text, re.IGNORECASE)
     extracted_text = match.group(1) if match else None
     found_extracted = True if extracted_text else False
@@ -187,10 +193,10 @@ def _raw_question_and_answer_extractor_new(whole_text: str) -> List[Dict[str, st
 
     # question regex
     # question_regex = r"^question:\s*\d*"
-    regex = r"QUESTION:\s*(.*)"
+    # regex = r"QUESTION:\s*(.*)"
 
-    # answer regex
-    answer_regex = r"^answer:\s*\d*"
+    # # answer regex
+    # answer_regex = r"^answer:\s*\d*"
 
     cur_qa_pair = {}
     qa_pairs = []
