@@ -152,10 +152,41 @@ def fix_first_prompt(text: str, chat_chain: List[Dict[str, str]]) -> List[Dict[s
     ]
     return fixed_first_prompt + chat_chain
 
+def _raw_question_and_answer_extractor_new(whole_text: str) -> List[Dict[str, str]] | None:
+    """
+    Loop over all lines in the text.  
+    When we find a question, capture the question into a variable and set a state flag
+    When we find an answer, capture the answer into a variable and save the QA pair
+    When we run out of lines, return the list of QA pairs
+    
+    """
 
-# TODO: add test
-# TODO: refactor this as a state machine?
-def question_and_answer_extractor(whole_text: str, context: str) -> List[Dict[str, str]] | None:
+
+    # question regex
+    question_regex = r"^question\s*\d*"
+
+    # answer regex
+    answer_regex = r"^answer\s*\d*"
+
+    qa_pairs = []
+
+
+    text_lines = whole_text.split("\n")
+    for i in text_lines:
+        raw_text = i.strip()
+        text = raw_text.lower()
+
+        # ignore empty lines
+        if text == "":
+            continue
+
+
+
+    pass 
+
+
+def _raw_question_and_answer_extractor(whole_text: str) -> List[Dict[str, str]] | None:
+    
     text_lines = whole_text.split("\n")
     question: List[str] = []
     answer: List[str] = []
@@ -206,5 +237,14 @@ def question_and_answer_extractor(whole_text: str, context: str) -> List[Dict[st
 
     if result == []:
         return None
+    
+    return result
+
+
+# TODO: add test
+# TODO: refactor this as a state machine?
+def question_and_answer_extractor(whole_text: str, context: str) -> List[Dict[str, str]] | None:
+
+    result = _raw_question_and_answer_extractor(whole_text)
 
     return fix_first_prompt(context, result)
