@@ -7,7 +7,13 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 import torch
 from datasets import Dataset
-from transformers import Pipeline, pipeline
+
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    Pipeline, 
+    pipeline
+)
 
 from dalm.datasets.reading_comprehension_generation.utils import (
     input_generator,
@@ -100,7 +106,20 @@ def generate_synthetic_dataset(
         "return_full_text": False,
     },
 ) -> Iterator[Tuple[int, str, str, str]]:
-    model_pipeline = pipeline("text-generation", model=model_name, torch_dtype=torch.bfloat16, device_map="auto")
+    
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            torch_dtype=torch.bfloat16,
+            use_flash_attention_2=True,
+            device_map="auto"
+    )
+
+    model_pipeline = pipeline(
+        "text-generation", 
+        model=model, 
+    )
 
     input_files = input_generator(input_directory_or_file, csv_column)
 
