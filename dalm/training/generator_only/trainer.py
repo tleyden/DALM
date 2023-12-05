@@ -174,13 +174,18 @@ def train_generator(
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"  # Fix weird overflow issue with fp16 training
 
-    bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16)
+    bnb_config = BitsAndBytesConfig(
+        load_in_4bit=True, 
+        bnb_4bit_quant_type="nf4", 
+        bnb_4bit_compute_dtype=torch.bfloat16
+    )
 
     base_model = AutoModelForCausalLM.from_pretrained(
         model_name,
         quantization_config=bnb_config,
         device_map={"": Accelerator().local_process_index},
         trust_remote_code=True,
+        use_flash_attention_2=True,
     )
 
     base_model.config.use_cache = False
