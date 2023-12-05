@@ -30,7 +30,7 @@ dependencies = [
     "pydantic==1.10.9",  # Sync w/ other platform components
     "pysbd",
     "sentencepiece",
-    "flash-attn",
+    "flash-attn>=2.3.6",
 ]
 
 [project.scripts]
