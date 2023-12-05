@@ -119,6 +119,7 @@ def generate_synthetic_dataset(
     model_pipeline = pipeline(
         "text-generation", 
         model=model, 
+        tokenizer=tokenizer
     )
 
     input_files = input_generator(input_directory_or_file, csv_column)
